@@ -83,7 +83,9 @@ def parse_status(homework):
     homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
     if homework_status not in HOMEWORK_STATUSES:
-        raise Exception(f'Неизвестный статус {homework_status} работы {homework_name}')
+        raise Exception(
+            f'Неизвестный статус {homework_status} работы {homework_name}'
+        )
     verdict = HOMEWORK_STATUSES.get(homework_status)
     return f'Изменился статус проверки работы "{homework_name}": {verdict}'
 
@@ -91,8 +93,8 @@ def parse_status(homework):
 def send_message(bot, message):
     """Отправляем сообщение в ТГ."""
     try:
-       bot.send_message(TELEGRAM_CHAT_ID, message)
-       logger.info(f'Сообщение {message} отправлено в чат {TELEGRAM_CHAT_ID}')
+        bot.send_message(TELEGRAM_CHAT_ID, message)
+        logger.info(f'Сообщение {message} отправлено в чат {TELEGRAM_CHAT_ID}')
     except Exception:
         logger.error('Сообщение не отправлено')
 
@@ -124,6 +126,7 @@ def main():
                 send_message(bot, message)
                 error_message = message
             time.sleep(RETRY_TIME)
+
 
 if __name__ == '__main__':
     main()
