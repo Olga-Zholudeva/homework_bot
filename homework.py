@@ -43,13 +43,15 @@ HOMEWORK_STATUSES = {
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
 
+
 def check_tokens():
-    """Проверяем доступность переменных окружения"""
+    """Проверяем доступность переменных окружения."""
     if all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
         return True
 
+
 def get_api_answer(current_timestamp):
-    """Делаем запрос к API домашки и получаем ответ"""
+    """Делаем запрос к API домашки и получаем ответ."""
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     response = requests.get(ENDPOINT, headers=HEADERS, params=params)
@@ -60,16 +62,18 @@ def get_api_answer(current_timestamp):
     except Exception as error:
         logger.error(f'Ошибка при запросе к основному API: {error}')
 
+
 def check_response(response):
-    """Проверяем ответ API на корректность"""
+    """Проверяем ответ API на корректность."""
     if len(response['homeworks']) == 0:
         raise Exception('Список работ пуст')
     if type(response.get('homeworks')) is not list:
         raise Exception('Тип данных отличен от спика')
     return response.get('homeworks')[0]
 
+
 def parse_status(homework):
-    """Готовим сообщение о статусе работы"""
+    """Готовим сообщение о статусе работы."""
     if 'homework_name' not in homework:
         raise KeyError('Ключ "homework_name" отсутсвует в словаре homework')
     if 'status' not in homework:
@@ -81,13 +85,15 @@ def parse_status(homework):
     verdict = HOMEWORK_STATUSES.get(homework_status)
     return f'Изменился статус проверки работы "{homework_name}": {verdict}'
 
+
 def send_message(bot, message):
-    """Отправляем сообщение в ТГ"""
+    """Отправляем сообщение в ТГ."""
     try:
        bot.send_message(TELEGRAM_CHAT_ID, message)
        logger.info(f'Сообщение {message} отправлено в чат {TELEGRAM_CHAT_ID}')
     except Exception:
         logger.error('Сообщение не отправлено')
+
 
 def main():
     """Основная логика работы бота."""
