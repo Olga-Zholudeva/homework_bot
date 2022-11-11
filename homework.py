@@ -141,7 +141,7 @@ def main():
     while True:
         try:
             response = get_api_answer(current_timestamp)
-            if len (response['homeworks']) == 0:
+            if len(response['homeworks']) == 0:
                 send_message(bot, 'От ревьюра нет новостей')
             else:
                 current_timestamp = response.get('current_date')
@@ -166,9 +166,9 @@ def main():
 
 if __name__ == '__main__':
     logging.basicConfig(
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    level=logging.INFO,
-    filename='main.log',
-    filemode='w'
-)
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        level=logging.INFO,
+        filename='main.log',
+        filemode='w'
+    )
     main()
