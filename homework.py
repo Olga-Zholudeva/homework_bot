@@ -43,7 +43,8 @@ HOMEWORK_RESULTS = {
 
 
 class MyCustomException(Exception):
-    """Исключения для работы с HOMEWORK_BOT"""
+    """Исключения для работы с HOMEWORK_BOT."""
+
     pass
 
 
@@ -78,7 +79,7 @@ def check_response(response):
     """Проверяем ответ API на корректность."""
     logger.info('Начали приверку ответа')
     if not isinstance(response, dict):
-       raise TypeError('Тип данных отличен от словаря')
+        raise TypeError('Тип данных отличен от словаря')
     homeworks = response.get('homeworks')
     if 'homeworks' not in response or 'current_date' not in response:
         raise MyCustomException('В ответе нет нужного ключа')
@@ -118,6 +119,7 @@ def send_message(bot, message):
         )
     else:
         logger.info('Сообщение успешно отправлено')
+
 
 def main():
     """Основная логика работы бота."""
@@ -168,5 +170,5 @@ if __name__ == '__main__':
     level=logging.INFO,
     filename='main.log',
     filemode='w'
-    )
+)
     main()
