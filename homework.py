@@ -11,7 +11,8 @@ from logging.handlers import RotatingFileHandler
 
 from dotenv import load_dotenv
 
-from exceptions import MyCustomExceptionNotSendMessage, MyCustomExceptionSendMessage
+from exceptions import MyCustomExceptionNotSendMessage
+from exceptions import MyCustomExceptionSendMessage
 
 load_dotenv()
 
@@ -65,7 +66,9 @@ def get_api_answer(current_timestamp):
             )
         return response.json()
     except Exception:
-        raise MyCustomExceptionSendMessage('Произошла ошибка сетовой связности')
+        raise MyCustomExceptionSendMessage(
+            'Произошла ошибка сетовой связности'
+        )
 
 
 def check_response(response):
@@ -131,7 +134,9 @@ def main():
             response = get_api_answer(current_timestamp)
             if len(response['homeworks']) == 0:
                 logger.info('От ревьюра нет новостей')
-                raise MyCustomExceptionNotSendMessage('От ревьюра нет новостей')
+                raise MyCustomExceptionNotSendMessage(
+                    'От ревьюра нет новостей'
+                )
             else:
                 current_timestamp = response.get('current_date')
                 homework = check_response(response)
