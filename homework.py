@@ -11,6 +11,8 @@ from logging.handlers import RotatingFileHandler
 
 from dotenv import load_dotenv
 
+from exceptions import MyCustomExceptionNotSendMessage, MyCustomExceptionSendMessage
+
 load_dotenv()
 
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
@@ -42,12 +44,6 @@ HOMEWORK_RESULTS = {
 }
 
 
-class MyCustomException(Exception):
-    """Исключения для работы с HOMEWORK_BOT."""
-
-    pass
-
-
 def check_tokens():
     """Проверяем доступность переменных окружения."""
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
@@ -63,16 +59,13 @@ def get_api_answer(current_timestamp):
     }
     try:
         response = requests.get(**request_params)
-    except Exception:
-        raise MyCustomException('Произошла ошибка сетовой связности')
-    if response.status_code != HTTPStatus.OK:
-        raise MyCustomException(
-            f'Произошла ошибка: статус ответа {response.status_code}'
-        )
-    try:
+        if response.status_code != HTTPStatus.OK:
+            raise MyCustomExceptionSendMessage(
+                f'Произошла ошибка: статус ответа {response.status_code}'
+            )
         return response.json()
-    except Exception as error:
-        raise MyCustomException(f'Ошибка при запросе к основному API: {error}')
+    except Exception:
+        raise MyCustomExceptionSendMessage('Произошла ошибка сетовой связности')
 
 
 def check_response(response):
@@ -82,7 +75,7 @@ def check_response(response):
         raise TypeError('Тип данных отличен от словаря')
     homeworks = response.get('homeworks')
     if 'homeworks' not in response or 'current_date' not in response:
-        raise MyCustomException('В ответе нет нужного ключа')
+        raise KeyError('В ответе нет нужного ключа')
     if not isinstance(homeworks, list):
         raise TypeError('Тип данных отличен от списка')
     return homeworks
@@ -109,13 +102,9 @@ def send_message(bot, message):
     try:
         logger.info('Пробую отправить сообщение')
         bot.send_message(TELEGRAM_CHAT_ID, message)
-    except telegram.error.TelegramError as error:
-        raise telegram.TelegramError(
+    except MyCustomExceptionNotSendMessage as error:
+        raise MyCustomExceptionNotSendMessage(
             f'Возникла ошибка при отправке сообщения: {error}'
-        )
-    except Exception as error:
-        raise MyCustomException(
-            f'Произошел сбой при отправке сообщения: {error}'
         )
     else:
         logger.info('Сообщение успешно отправлено')
@@ -135,14 +124,14 @@ def main():
     if not check_tokens():
         logger.critical('Отсутствие обязательных переменных окружения')
         sys.exit('Проблема с доступом')
-    else:
-        bot = telegram.Bot(token=TELEGRAM_TOKEN)
+    bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
     while True:
         try:
             response = get_api_answer(current_timestamp)
             if len(response['homeworks']) == 0:
-                send_message(bot, 'От ревьюра нет новостей')
+                logger.info('От ревьюра нет новостей')
+                raise MyCustomExceptionNotSendMessage('От ревьюра нет новостей')
             else:
                 current_timestamp = response.get('current_date')
                 homework = check_response(response)
@@ -153,7 +142,9 @@ def main():
             if current_report != prev_report:
                 send_message(bot, message)
                 prev_report = current_report.copy()
-        except MyCustomException as error:
+        except MyCustomExceptionNotSendMessage as error:
+            logger.info(f'Возникла ошибка при отправке сообщения: {error}')
+        except MyCustomExceptionSendMessage as error:
             logger.error(error)
             message = f'Сбой в работе программы: {error}'
             current_report['message'] = message
