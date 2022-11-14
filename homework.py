@@ -132,18 +132,14 @@ def main():
     while True:
         try:
             response = get_api_answer(current_timestamp)
-            if len(response['homeworks']) == 0:
-                logger.info('От ревьюра нет новостей')
-                raise MyCustomExceptionNotSendMessage(
-                    'От ревьюра нет новостей'
-                )
-            else:
-                current_timestamp = response.get('current_date')
-                homework = check_response(response)
-                message = parse_status(homework[0])
-                homework_name = homework['homework_name']
-                current_report['homework_name'] = homework_name
-                current_report['message'] = message
+            if len(check_response(response)) == 0:
+                logger.debag('От ревьюра нет новостей')
+            current_timestamp = response.get('current_date')
+            homeworks = check_response(response)
+            message = parse_status(homeworks[0])
+            homework_name = homeworks[0]['homework_name']
+            current_report['homework_name'] = homework_name
+            current_report['message'] = message
             if current_report != prev_report:
                 send_message(bot, message)
                 prev_report = current_report.copy()
