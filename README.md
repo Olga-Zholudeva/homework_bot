@@ -13,11 +13,11 @@
 - Клонируем репозиторий: **git clone [homework_bot](https://github.com/Olga-Zholudeva/homework_bot)**
 - Cоздаем и активировируем виртуальное окружение: **python3 -m venv env source env/bin/activate**
 - Устанавливаем зависимости из файла requirements.txt: **pip install -r requirements.txt**
-- Импортируем токены для ЯндексюПрактикум и для Телеграмм:
-      **export PRACTICUM_TOKEN=<PRACTICUM_TOKEN>**
-      **export TELEGRAM_TOKEN=<TELEGRAM_TOKEN>**
-      **export CHAT_ID=<CHAT_ID>**
-- Запускаем бота: **python homework.py**
+- Импортируем токены для ЯндексюПрактикум и для Телеграмм:  
+      **export PRACTICUM_TOKEN=<PRACTICUM_TOKEN>**  
+      **export TELEGRAM_TOKEN=<TELEGRAM_TOKEN>**  
+      **export CHAT_ID=<CHAT_ID>**  
+- Запускаем бота: **python homework.py**  
 
 
 ## Проект выполнен:
